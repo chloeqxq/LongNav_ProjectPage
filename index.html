@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LongNav-R1: Horizon-Adaptive Multi-Turn RL for Long-Horizon VLA Navigation</title>
+    <link rel="icon" type="image/png" href="static/logo/curly.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 45px;
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            margin-bottom: 20px;
+            color: #222;
+            line-height: 1.25;
+        }
+
+        .title-main {
+            display: block;
+            font-size: 58px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .title-sub {
+            display: block;
+            font-size: 25px;
+            font-weight: 400;
+            color: #444;
+        }
+
+        .authors {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 20px;
+            margin-bottom: 12px;
+        }
+
+        .author {
+            font-size: 16px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .author:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        .affiliation,
+        .email {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .paper-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin: 24px 0 22px;
+        }
+
+        .paper-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .paper-link:hover {
+            background: #007bff;
+            border-color: #007bff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+
+        .paper-link svg,
+        .paper-link img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            fill: currentColor;
+        }
+
+        .paper-link.disabled {
+            opacity: 0.62;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .coming-soon {
+            font-size: 11px;
+            color: #888;
+            font-weight: normal;
+        }
+
+        .logos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 48px;
+            margin: 18px 0 8px;
+        }
+
+        .logos img {
+            height: 42px;
+            width: auto;
+        }
+
+        .logos img[alt="CURLY Lab Logo"] {
+            height: 62px;
+        }
+
+        .logos img[alt="Michigan Traffic Lab Logo"] {
+            height: 38px;
+        }
+
+        .floating-nav {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 12px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            min-width: 140px;
+        }
+
+        .nav-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .section,
+        .abstract-section,
+        .citation-section,
+        .license-section {
+            background: white;
+            border-radius: 10px;
+            padding: 34px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2,
+        .abstract-section h2,
+        .citation-section h2,
+        .license-section h2 {
+            color: #222;
+            margin-bottom: 18px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .abstract-text,
+        .approach-text,
+        .section p {
+            font-size: 16px;
+            color: #444;
+            text-align: justify;
+            margin-bottom: 16px;
+        }
+
+        .figure-section {
+            margin: 28px 0 34px;
+            text-align: center;
+        }
+
+        .figure-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+            background: white;
+        }
+
+        .image-credit {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+        }
+
+        .highlight-grid,
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 22px;
+        }
+
+        .highlight-card,
+        .result-card {
+            background: #f8f9fa;
+            border: 1px solid #e1e5ea;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .highlight-card h3,
+        .result-card h3 {
+            color: #007bff;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .highlight-card p,
+        .result-card p {
+            color: #555;
+            font-size: 15px;
+            text-align: left;
+            margin-bottom: 0;
+        }
+
+        .metric {
+            color: #222;
+            font-size: 30px;
+            line-height: 1.1;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .video-section {
+            margin-top: 30px;
+        }
+
+        .video-section h3 {
+            color: #222;
+            font-size: 22px;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 26px;
+        }
+
+        .video-placeholder {
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border: 2px dashed #cfd6df;
+            border-radius: 10px;
+            color: #777;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .video-embed {
+            aspect-ratio: 16 / 9;
+            display: block;
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            background: #000;
+            object-fit: cover;
+        }
+
+        .video-card {
+            margin: 0;
+        }
+
+        .video-caption {
+            color: #222;
+            font-size: 15px;
+            font-weight: 700;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .citation-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .citation-text {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.45;
+            color: #333;
+            white-space: pre;
+        }
+
+        .license-content {
+            text-align: center;
+        }
+
+        .license-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .license-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 1200px) {
+            .floating-nav {
+                display: none;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .container {
+                padding: 24px 14px;
+            }
+
+            .title-main {
+                font-size: 42px;
+            }
+
+            .title-sub {
+                font-size: 20px;
+            }
+
+            .section,
+            .abstract-section,
+            .citation-section,
+            .license-section {
+                padding: 24px 18px;
+            }
+
+            .highlight-grid,
+            .results-grid,
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .logos {
+                gap: 34px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="floating-nav" id="floating-nav">
+        <div class="nav-menu">
+            <a href="#abstract-section" class="nav-link" data-section="abstract-section">Abstract</a>
+            <a href="#approach-section" class="nav-link" data-section="approach-section">Approach</a>
+            <a href="#results-section" class="nav-link" data-section="results-section">Results</a>
+            <a href="#citation-section" class="nav-link" data-section="citation-section">Citation</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>
+                <span class="title-main">LongNav-R1</span>
+                <span class="title-sub">Horizon-Adaptive Multi-Turn RL for Long-Horizon VLA Navigation</span>
+            </h1>
+
+            <div class="authors">
+                <a href="https://phyllish.github.io/" class="author" target="_blank" rel="noopener">Yue Hu</a>
+                <span class="author">Avery Xi</span>
+                <a href="https://scholar.google.com/citations?hl=en&user=lqyNeO4AAAAJ&view_op=list_works&sortby=pubdate" class="author" target="_blank" rel="noopener">Qixin Xiao</a>
+                <a href="https://sethisaacson.me/" class="author" target="_blank" rel="noopener">Seth Isaacson</a>
+                <a href="https://traffic.engin.umich.edu/" class="author" target="_blank" rel="noopener">Henry X. Liu</a>
+                <a href="https://www.roahmlab.com/ram-personal" class="author" target="_blank" rel="noopener">Ram Vasudevan</a>
+                <a href="https://curly.engin.umich.edu/" class="author" target="_blank" rel="noopener">Maani Ghaffari</a>
+            </div>
+            <p class="affiliation">University of Michigan, Ann Arbor</p>
+            <p class="email">{huyu, axi, qxiaocs, sethgi, henryliu, ramv, maanigj}@umich.edu</p>
+
+            <div class="paper-links">
+                <a href="LongNav_R1.pdf" class="paper-link" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm0 2.5L17.5 8H14zM8 13h8v2H8zm0 4h8v2H8zm0-8h4v2H8z"/></svg>
+                    Paper
+                </a>
+                <a href="https://github.com/UMich-CURLY/LongNav-R1" class="paper-link" target="_blank" rel="noopener">
+                    <img src="static/logo/github.svg" alt="GitHub">
+                    Code
+                </a>
+                <a href="https://arxiv.org/abs/2602.12351" class="paper-link" target="_blank" rel="noopener">
+                    <img src="static/logo/arXiv.png" alt="arXiv">
+                    arXiv
+                </a>
+            </div>
+
+            <div class="logos">
+                <img src="static/logo/curly.png" alt="CURLY Lab Logo">
+                <img src="static/logo/Roahm.png" alt="ROAHM Lab Logo">
+                <img src="static/logo/MTL-cropped.png" alt="Michigan Traffic Lab Logo">
+                <img src="static/logo/informal.png" alt="University of Michigan Robotics Logo">
+            </div>
+        </header>
+
+        <div class="figure-section">
+            <img src="static/figures/LongNav-Intro.png" alt="LongNav-R1 overview">
+            <p class="image-credit">LongNav-R1 formulates long-horizon navigation as a multi-turn conversation between a VLA policy and the embodied environment.</p>
+        </div>
+
+        <div class="abstract-section" id="abstract-section">
+            <h2>Abstract</h2>
+            <p class="abstract-text">
+                This paper develops LongNav-R1, an end-to-end multi-turn reinforcement learning (RL) framework designed to optimize Visual-Language-Action (VLA) models for long-horizon navigation. Unlike existing single-turn paradigm, LongNav-R1 reformulates the navigation decision process as a continuous multi-turn conversation between the VLA policy and the embodied environment. This multi-turn RL framework offers two distinct advantages: i) it enables the agent to reason about the causal effects of historical interactions and sequential future outcomes; and ii) it allows the model to learn directly from online interactions, fostering diverse trajectory generation and avoiding the behavioral rigidity often imposed by human demonstrations. Furthermore, we introduce Horizon-Adaptive Policy Optimization. This mechanism explicitly accounts for varying horizon lengths during advantage estimation, facilitating accurate temporal credit assignment over extended sequences. Consequently, the agent develops diverse navigation behaviors and resists collapse during long-horizon tasks. Experiments on object navigation benchmarks validate the framework's efficacy: With 4,000 rollout trajectories, LongNav-R1 boosts the Qwen3-VL-2B success rate from 64.3% to 73.0%. These results demonstrate superior sample efficiency and significantly outperform state-of-the-art methods. The model's generalizability and robustness are further validated by its zero-shot performance in long-horizon real-world navigation settings.
+            </p>
+        </div>
+
+        <div class="section" id="approach-section">
+            <h2>Approach</h2>
+            <div class="figure-section">
+                <img src="static/figures/LongNav-Method.png" alt="LongNav-R1 method">
+            </div>
+            <p class="approach-text">
+                LongNav-R1 treats navigation as a long-horizon, multi-turn interaction. At every step, the VLA policy conditions on the global instruction, historical observations and actions, and the current observation before selecting the next action. This preserves the sequential structure of navigation and allows online RL to optimize directly for final task success rather than merely imitating isolated expert actions.
+            </p>
+            <p class="approach-text">
+                To stabilize long-horizon learning, LongNav-R1 introduces Horizon-Adaptive Policy Optimization (HAPO), a critic-free advantage estimation method that uses horizon-aware temporal kernels to assign credit across trajectories of different lengths. This gives the policy a lightweight way to reason about which decisions matter most for final success.
+            </p>
+
+            <div class="highlight-grid">
+                <div class="highlight-card">
+                    <h3>Multi-Turn RL</h3>
+                    <p>Recasts VLA navigation as a continuous conversation between the agent and environment.</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>Online Exploration</h3>
+                    <p>Learns from rollout outcomes and encourages diverse navigation behaviors beyond demonstration replay.</p>
+                </div>
+                <div class="highlight-card">
+                    <h3>HAPO</h3>
+                    <p>Adapts advantage estimation to varying horizon lengths for more accurate temporal credit assignment.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="results-section">
+            <h2>Results</h2>
+            <p>
+                LongNav-R1 is evaluated across real-world settings and widely used object navigation benchmarks, including HM3D V1, HM3D V2, MP3D, and OVON. The experiments show that multi-turn RL improves task-aware navigation behavior while maintaining strong generalization to unseen goals and real-world environments.
+            </p>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="metric">73.0%</div>
+                    <h3>Success Rate</h3>
+                    <p>Qwen3-VL-2B improves from 64.3% to 73.0% with 4,000 rollout trajectories.</p>
+                </div>
+                <div class="result-card">
+                    <div class="metric">+8.7%</div>
+                    <h3>Multi-Turn Gain</h3>
+                    <p>Ablations show multi-turn RL provides a substantial success-rate improvement over SFT.</p>
+                </div>
+                <div class="result-card">
+                    <div class="metric">zero-shot</div>
+                    <h3>Real-World Transfer</h3>
+                    <p>The learned policy localizes unseen objects in long-horizon real-world navigation settings.</p>
+                </div>
+            </div>
+
+            <div class="video-section">
+                <h3>Simulation Videos</h3>
+                <div class="video-grid">
+                    <div class="video-placeholder">Simulation Video 1</div>
+                    <div class="video-placeholder">Simulation Video 2</div>
+                    <div class="video-placeholder">Simulation Video 3</div>
+                </div>
+
+                <h3>Real-World Videos</h3>
+                <div class="video-grid">
+                    <figure class="video-card">
+                        <video class="video-embed" autoplay muted loop playsinline controls preload="metadata">
+                            <source src="static/videos/stair.mp4" type="video/mp4">
+                        </video>
+                        <figcaption class="video-caption">Stair</figcaption>
+                    </figure>
+                    <figure class="video-card">
+                        <video class="video-embed" autoplay muted loop playsinline controls preload="metadata">
+                            <source src="static/videos/extinguisher.mp4" type="video/mp4">
+                        </video>
+                        <figcaption class="video-caption">Extinguisher</figcaption>
+                    </figure>
+                    <figure class="video-card">
+                        <video class="video-embed" autoplay muted loop playsinline controls preload="metadata">
+                            <source src="static/videos/elevator.mp4" type="video/mp4">
+                        </video>
+                        <figcaption class="video-caption">Elevator</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </div>
+
+        <div class="citation-section" id="citation-section">
+            <h2>Citation</h2>
+            <p>If you find this work useful, please cite:</p>
+            <br>
+            <div class="citation-box">
+                <pre class="citation-text">@inproceedings{hu2026longnavr1,
+  title={LongNav-R1: Horizon-Adaptive Multi-Turn RL for Long-Horizon VLA Navigation},
+  author={Hu, Yue and Xi, Avery and Xiao, Qixin and Isaacson, Seth and Liu, Henry X. and Vasudevan, Ram and Ghaffari, Maani},
+  booktitle={Robotics: Science and Systems (RSS)},
+  year={2026},
+  note={RSS 2026, Submission 394}
+}</pre>
+            </div>
+        </div>
+
+        <div class="license-section">
+            <h2>License</h2>
+            <p>This project page follows the LongNav-R1 paper and code release. Please refer to the repository for license details.</p>
+            <div class="license-content">
+                <a class="license-link" href="https://github.com/UMich-CURLY/LongNav-R1" target="_blank" rel="noopener">LongNav-R1 Repository</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('[id$="-section"]');
+
+            navLinks.forEach((link) => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetSection = document.querySelector(link.getAttribute('href'));
+                    if (targetSection) {
+                        window.scrollTo({
+                            top: targetSection.offsetTop - 40,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            function updateActiveSection() {
+                const scrollPosition = window.scrollY + 140;
+                let activeId = 'abstract-section';
+
+                sections.forEach((section) => {
+                    const sectionTop = section.offsetTop;
+                    const sectionBottom = sectionTop + section.offsetHeight;
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                        activeId = section.id;
+                    }
+                });
+
+                navLinks.forEach((link) => {
+                    link.classList.toggle('active', link.dataset.section === activeId);
+                });
+            }
+
+            window.addEventListener('scroll', updateActiveSection, { passive: true });
+            updateActiveSection();
+        })();
+    </script>
+</body>
+</html>
