@@ -294,6 +294,41 @@
             margin-bottom: 26px;
         }
 
+        .simulation-video-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .simulation-video-frame {
+            overflow: hidden;
+            border-radius: 10px;
+            background: #000;
+        }
+
+        .simulation-video-frame .video-embed {
+            aspect-ratio: auto;
+            height: 100%;
+            border-radius: 0;
+            object-fit: cover;
+            object-position: left center;
+        }
+
+        .simulation-video-frame-a {
+            aspect-ratio: 16 / 4.5;
+        }
+
+        .simulation-video-frame-a .video-embed {
+            width: 124%;
+            object-position: left center;
+        }
+
+        .simulation-video-frame-d {
+            aspect-ratio: 16 / 6;
+        }
+
+        .simulation-video-frame-d .video-embed {
+            object-position: left center;
+        }
+
         .video-placeholder {
             aspect-ratio: 16 / 9;
             display: flex;
@@ -516,10 +551,39 @@
 
             <div class="video-section">
                 <h3>Simulation Videos</h3>
-                <div class="video-grid">
-                    <div class="video-placeholder">Simulation Video 1</div>
-                    <div class="video-placeholder">Simulation Video 2</div>
-                    <div class="video-placeholder">Simulation Video 3</div>
+                <div class="video-grid simulation-video-grid">
+                    <figure class="video-card">
+                        <div class="simulation-video-frame simulation-video-frame-a">
+                            <video class="video-embed" autoplay muted loop playsinline controls preload="metadata">
+                                <source src="static/videos/sft_horizon_200_a.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <figcaption class="video-caption">TV Monitor Scene A - SFT</figcaption>
+                    </figure>
+                    <figure class="video-card">
+                        <div class="simulation-video-frame simulation-video-frame-a">
+                            <video class="video-embed" autoplay muted loop playsinline controls preload="metadata">
+                                <source src="static/videos/rl_horizon_200_a.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <figcaption class="video-caption">TV Monitor Scene A - LongNav-R1</figcaption>
+                    </figure>
+                    <figure class="video-card">
+                        <div class="simulation-video-frame simulation-video-frame-d">
+                            <video class="video-embed" autoplay muted loop playsinline controls preload="metadata">
+                                <source src="static/videos/sft_horizon_200_d.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <figcaption class="video-caption">TV Monitor Scene B - SFT</figcaption>
+                    </figure>
+                    <figure class="video-card">
+                        <div class="simulation-video-frame simulation-video-frame-d">
+                            <video class="video-embed" autoplay muted loop playsinline controls preload="metadata">
+                                <source src="static/videos/rl_horizon_200_d.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <figcaption class="video-caption">TV Monitor Scene B - LongNav-R1</figcaption>
+                    </figure>
                 </div>
 
                 <h3>Real-World Videos</h3>
